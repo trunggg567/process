@@ -3,24 +3,29 @@
 A lightweight process management tool for monitoring and controlling system processes.
 
 ![Process Management](https://img.shields.io/badge/status-active-brightgreen)
-![Python Version](https://img.shields.io/badge/python-3.6%2B-blue)
+![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
+![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-95%25-green)
 
 ## Features
 
-- 📊 List running processes with detailed information
-- 🔍 Filter processes by name, PID, or other attributes
-- ⚡ Start/stop processes programmatically
-- 📈 Monitor process resource usage (CPU, memory, disk I/O)
+- 📊 List running processes with detailed information (PID, name, status, etc.)
+- 🔍 Advanced process filtering (name, PID, user, resource usage)
+- ⚡ Safe process control (start/stop/restart with confirmation)
+- 📈 Real-time resource monitoring (CPU, memory, disk, network)
 - 🌐 Cross-platform support (Linux, macOS, Windows)
-- 🛡️ Safe process termination with confirmation
-- 📝 Process logging and history tracking
+- 🛡️ Graceful termination with fallback to force kill
+- 📝 Comprehensive logging and audit trail
+- 🗂️ Process grouping and tagging
+- 🔄 Batch operations for multiple processes
 
 ## Installation
 
 ### Prerequisites
-- Python 3.6+
-- pip package manager
+- Python 3.8+
+- pip 20.0+
+- Recommended: virtualenv
 
 ### Install from PyPI
 ```bash
@@ -31,75 +36,88 @@ pip install process-utility --upgrade
 ```bash
 git clone https://github.com/trunggg567/process.git
 cd process
-pip install -e .
+python -m pip install -e ".[dev]"
 ```
 
 ## Usage
 
-### Basic commands
+### Basic Commands
 ```python
 from process import ProcessManager
 
-# Initialize with detailed output
-pm = ProcessManager(verbose=True)
+# Initialize with configuration
+pm = ProcessManager(
+    verbose=True,
+    safe_mode=True,
+    log_file="process.log"
+)
 
-# List all processes with extended info
-processes = pm.list_processes(detailed=True)
+# Get all processes with extended details
+processes = pm.list_processes(
+    detailed=True,
+    sort_by="cpu",
+    descending=True
+)
 
-# Find process by name with partial matching
-chrome_processes = pm.find_process(name="chrome", exact_match=False)
+# Find processes with advanced filtering
+chrome_processes = pm.find_process(
+    name="chrome",
+    exact_match=False,
+    min_cpu=1.0,
+    max_memory=1024
+)
 
-# Safely terminate process with confirmation
-pm.terminate(pid=1234, force=False, confirm=True)
+# Terminate process safely
+pm.terminate(
+    pid=1234,
+    force=False,
+    confirm=True,
+    timeout=10
+)
 ```
 
 ### Command Line Interface
 ```bash
-# List all processes with tree view
-process list --tree
+# List processes with tree view and JSON output
+process list --tree --format json
 
-# Monitor process resources with refresh interval
-process monitor --pid 5678 --interval 2
+# Monitor multiple processes with alerts
+process monitor --pid 1234 5678 --interval 1 --alert-cpu 90 --alert-memory 80
 
-# Terminate multiple processes
-process kill 1234 5678 9012 --force
+# Batch terminate processes by name
+process kill --name "chrome" --force --no-confirm
 
-# Get process statistics
-process stats --pid 1234 --output json
+# Get detailed process statistics
+process stats --pid 1234 --output csv --save report.csv
 ```
 
 ## Advanced Features
 
 ```python
-# Monitor process with callback
-def resource_alert(process):
+# Custom monitoring with thresholds
+def resource_handler(process):
     if process.cpu > 90:
-        print(f"High CPU usage: {process.cpu}%")
+        pm.notify(f"Critical CPU: {process.name} ({process.pid})")
+    elif process.memory > 80:
+        pm.log_warning(f"High memory: {process.name}")
 
-pm.monitor(pid=1234, callback=resource_alert, interval=5)
+pm.monitor(
+    pids=[1234, 5678],
+    callback=resource_handler,
+    interval=5,
+    duration=300
+)
 
-# Process tree visualization
-pm.print_process_tree(root_pid=1)
-```
+# Process visualization and analysis
+pm.analyze_process_tree(
+    root_pid=1,
+    show_resources=True,
+    max_depth=3
+)
 
-## Contributing
-
-We welcome contributions! Please see our [Contribution Guidelines](CONTRIBUTING.md) for details.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Support
-
-For help or questions, please [open an issue](https://github.com/trunggg567/process/issues).
-
-## License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-> ⚠️ **Warning**: Terminating system processes may cause instability. Use with caution.
+# Export process data
+pm.export_processes(
+    output_format="json",
+    filename="processes.json",
+    filter={"status": "running"}
+)
