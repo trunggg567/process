@@ -121,3 +121,30 @@ pm.export_processes(
     filename="processes.json",
     filter={"status": "running"}
 )
+
+## 更新
+
+feature: Add feature improvements for process handling - 2025-03-27
+
+```markdown
+# Pull Request Description
+
+## Overview
+This PR introduces functional improvements to enhance the overall performance and user experience of the repository. The changes aim to address specific pain points and streamline existing processes.
+
+## Changes
+- Implemented functional improvements to optimize performance
+- Updated relevant components to align with the latest requirements
+- Refactored code for better readability and maintainability
+- Added new features to support enhanced functionality
+
+## Testing
+To verify the changes:
+1. Clone the repository and checkout the `feature/update-20250327-122400` branch
+2. Run the existing test suite to ensure all tests pass
+3. Manually test the new features and improvements to confirm they work as expected
+4. Check for any potential regressions in existing functionality
+
+## Related Issues
+- N/A (No related issues at this time)
+```
